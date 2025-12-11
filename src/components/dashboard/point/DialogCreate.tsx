@@ -112,6 +112,16 @@ const DialogCreate = ({ initDefault, structure }: propsCreate) => {
         <DialogContent>
 
           {structure.field.map((item: any, index: number) => {
+            // ตรวจสอบ showWhen condition
+            if (item.showWhen) {
+              const { field, value } = item.showWhen
+              const currentValue = selectValues[field] || data[field]
+
+              if (currentValue !== value) {
+                return null // ไม่แสดง field นี้
+              }
+            }
+
             switch (item.type) {
               case 'image':
                 return (

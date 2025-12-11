@@ -5,6 +5,7 @@ export type TypePoint = {
   title: string;
   thumbnail: string;
   point: number;
+  reward?: number; // จำนวนเครดิตที่จะได้รับ (สำหรับ type: credit)
   type: 'credit' | 'default';
   status: string;
   createDate: Date;

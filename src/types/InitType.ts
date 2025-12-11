@@ -9,6 +9,7 @@ export type InitPoint = {
   thumbnail?: Record<string, any>;
   title: string;
   type: 'credit' | 'default';
+  reward?: number; // จำนวนเครดิตที่จะได้รับ (สำหรับ type: credit)
   status: 'publish' | 'pending'
 }
 

@@ -27,6 +27,7 @@ const MainPoint = () => {
   const initDefault: InitPoint = {
     title: '',
     type: 'default',
+    reward: 0,
     status: 'publish'
   }
 
@@ -48,7 +49,13 @@ const MainPoint = () => {
       {
         id: 'point',
         type: 'number',
-        label: 'พ้อย'
+        label: 'พ้อยต์ที่ใช้แลก'
+      },
+      {
+        id: 'reward',
+        type: 'number',
+        label: 'จำนวนเครดิตที่ได้รับ (เฉพาะ credit)',
+        showWhen: { field: 'type', value: 'credit' }
       },
       {
         id: 'type',

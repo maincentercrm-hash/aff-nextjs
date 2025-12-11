@@ -140,6 +140,18 @@ const DialogEdit = () => {
               <MenuItem value='credit'>credit</MenuItem>
             </CustomTextField>
 
+            {/* แสดง field reward เฉพาะเมื่อ type เป็น credit */}
+            {select.type === 'credit' && (
+              <CustomTextField fullWidth
+                id='reward'
+                className='mb-4'
+                label='จำนวนเครดิตที่ได้รับ'
+                type='number'
+                placeholder='จำนวนเครดิต'
+                defaultValue={select.reward || 0}
+                onChange={handleChangeData}
+              />
+            )}
 
             <Typography variant="h5" component="h5" className='underline text-sm'>ภาพปก</Typography>
 

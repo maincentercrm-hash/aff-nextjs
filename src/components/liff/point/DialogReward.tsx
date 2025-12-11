@@ -117,7 +117,18 @@ const DialogReward = ({ data, currentPoint, tel, userId }: PrompsDialogReward) =
 
     try {
       // Step 1: หัก Points
-      await actionPoint('tbl_client_point', clientPoint);
+      const pointResult = await actionPoint('tbl_client_point', clientPoint);
+
+      console.log('Point deduction result:', pointResult);
+
+      // ตรวจสอบว่าหัก point สำเร็จหรือไม่
+      if (pointResult?.type === 'error') {
+        console.error('Failed to deduct points:', pointResult.message);
+        alert(pointResult.message || 'ไม่สามารถหัก Point ได้');
+        setIsRedeeming(false);
+
+        return;
+      }
 
       // Step 2: สร้าง Log
       const logResult = await actionCreate('tbl_point_logs', pointLog);
@@ -131,7 +142,7 @@ const DialogReward = ({ data, currentPoint, tel, userId }: PrompsDialogReward) =
           log_id: logResult.id,
           user_id: userId,
           reward_title: data.title,
-          reward: data.point // จำนวนเครดิตที่จะได้รับ
+          reward: data.reward || data.point // ใช้ reward ถ้ามี, ถ้าไม่มีใช้ point
         });
       }
 
