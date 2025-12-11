@@ -9,10 +9,8 @@ import { NextResponse } from "next/server";
  * {
  *   "log_id": "674f1234567890abcdef1234",
  *   "user_id": "U1234567890abcdef",
- *   "tel": "0891234567",
  *   "reward_title": "เครดิต 500 บาท",
- *   "reward_amount": 500,
- *   "point_used": 1000
+ *   "reward": 500
  * }
  */
 export async function POST(req: Request) {
@@ -22,14 +20,12 @@ export async function POST(req: Request) {
     const {
       log_id,
       user_id,
-      tel,
       reward_title,
-      reward_amount,
-      point_used
+      reward
     } = body;
 
     // Validate required fields
-    if (!log_id || !user_id || !tel || !reward_title) {
+    if (!log_id || !user_id || !reward_title) {
       return NextResponse.json({
         message: "Missing required fields",
         type: "error"
@@ -68,14 +64,12 @@ export async function POST(req: Request) {
     // Build callback URL
     const callbackUrl = `${appUrl}/api/reward-callback`;
 
-    // Prepare payload for External API
+    // Prepare payload for External API (ตามเอกสาร REWARD_CLAIM_API_FLOW.md)
     const externalPayload = {
       log_id,
       user_id,
-      tel,
-      reward_title,
-      reward_amount: reward_amount || 0,
-      point_used: point_used || 0,
+      mission_detail: reward_title,
+      reward: reward || 0,
       callback_url: callbackUrl,
       line_at: lineAt || ''
     };

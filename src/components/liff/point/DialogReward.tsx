@@ -31,10 +31,8 @@ type PrompsDialogReward = {
 async function sendCreditClaimToExternalAPI(params: {
   log_id: string;
   user_id: string;
-  tel: string;
   reward_title: string;
-  reward_amount: number;
-  point_used: number;
+  reward: number;
 }) {
   try {
     const response = await fetch('/api/claim-credit-reward', {
@@ -132,10 +130,8 @@ const DialogReward = ({ data, currentPoint, tel, userId }: PrompsDialogReward) =
         await sendCreditClaimToExternalAPI({
           log_id: logResult.id,
           user_id: userId,
-          tel: tel,
           reward_title: data.title,
-          reward_amount: data.point, // จำนวนเครดิตที่จะได้รับ
-          point_used: data.point
+          reward: data.point // จำนวนเครดิตที่จะได้รับ
         });
       }
 
