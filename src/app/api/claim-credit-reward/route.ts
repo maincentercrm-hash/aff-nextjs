@@ -69,7 +69,7 @@ export async function POST(req: Request) {
       log_id,
       user_id,
       mission_detail: reward_title,
-      reward: reward || 0,
+      reward: Number(reward) || 0,
       callback_url: callbackUrl,
       line_at: lineAt || ''
     };
