@@ -10,12 +10,12 @@ export async function PATCH(req: Request) {
     const database = client.db(process.env.DB_NAME);
     const collection = database.collection(table);
 
-    // Ensure userId exists
-    if (!data.userId) {
+    // Ensure tel exists (primary identifier)
+    if (!data.tel) {
       await client.close();
 
       return NextResponse.json({
-        message: "UserId is required",
+        message: "Tel is required",
         type: "error"
       });
     }
@@ -37,18 +37,9 @@ export async function PATCH(req: Request) {
       }
     }
 
-    // Extract data
-    const { userId, point, operation } = data;
+    // Extract data - use tel as primary identifier for stability
+    const { tel, point, operation, userId } = data;
     const currentDate = new Date().toISOString();
-
-    // Debug log
-    /*console.log('Updating points:', {
-      userId,
-      point,
-      operation,
-      currentDate
-    });
-    */
 
     // Determine the update operation
     let updateOperation;
@@ -58,6 +49,7 @@ export async function PATCH(req: Request) {
         $inc: { point: point },
         $set: {
           updateDate: currentDate,
+          userId: userId, // Update userId in case it changed
           lastPointOperation: {
             type: 'add',
             amount: point,
@@ -66,8 +58,8 @@ export async function PATCH(req: Request) {
         }
       };
     } else if (operation === '-') {
-      // Check if user has enough points before deducting
-      const user = await collection.findOne({ userId });
+      // Check if user has enough points before deducting (search by tel)
+      const user = await collection.findOne({ tel });
 
       if (!user || user.point < point) {
         await client.close();
@@ -82,6 +74,7 @@ export async function PATCH(req: Request) {
         $inc: { point: -point },
         $set: {
           updateDate: currentDate,
+          userId: userId, // Update userId in case it changed
           lastPointOperation: {
             type: 'subtract',
             amount: point,
@@ -98,9 +91,9 @@ export async function PATCH(req: Request) {
       });
     }
 
-    // Update the document by userId using $inc for point adjustment
+    // Update the document by tel using $inc for point adjustment
     const result = await collection.updateOne(
-      { userId },
+      { tel },
       updateOperation
     );
 
@@ -111,6 +104,7 @@ export async function PATCH(req: Request) {
         message: "User not found",
         type: "error",
         details: {
+          tel,
           userId,
           operation,
           point
@@ -123,6 +117,7 @@ export async function PATCH(req: Request) {
       message: "Points updated successfully",
       type: "success",
       details: {
+        tel,
         userId,
         operation,
         point,
