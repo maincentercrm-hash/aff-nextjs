@@ -138,12 +138,32 @@ const DialogReward = ({ data, currentPoint, tel, userId }: PrompsDialogReward) =
 
       // Step 4: ถ้าเป็น credit type → ส่งไป External API
       if (isCredit && logResult?.id) {
-        await sendCreditClaimToExternalAPI({
+        const externalResult = await sendCreditClaimToExternalAPI({
           log_id: logResult.id,
           user_id: userId,
           reward_title: data.title,
           reward: data.reward || data.point // ใช้ reward ถ้ามี, ถ้าไม่มีใช้ point
         });
+
+        // ถ้า External API fail → คืน point ให้ user
+        if (!externalResult.success) {
+          console.error('External API failed, refunding points...');
+
+          // คืน point
+          const refundPoint = {
+            userId: userId,
+            tel: tel,
+            point: data.point,
+            operation: '+',
+          };
+
+          await actionPoint('tbl_client_point', refundPoint);
+
+          alert('เกิดข้อผิดพลาดในการส่งรางวัล กรุณาลองใหม่อีกครั้ง');
+          setIsRedeeming(false);
+
+          return;
+        }
       }
 
       setOpen(false);
@@ -159,7 +179,21 @@ const DialogReward = ({ data, currentPoint, tel, userId }: PrompsDialogReward) =
     } catch (error) {
       console.error('Error Redeeming Points:', error);
 
-      // อาจจะเพิ่มการแจ้งเตือน error ให้ user ทราบ
+      // คืน point ถ้าเกิด error
+      try {
+        const refundPoint = {
+          userId: userId,
+          tel: tel,
+          point: data.point,
+          operation: '+',
+        };
+
+        await actionPoint('tbl_client_point', refundPoint);
+        alert('เกิดข้อผิดพลาด Point ถูกคืนแล้ว กรุณาลองใหม่อีกครั้ง');
+      } catch (refundError) {
+        console.error('Failed to refund points:', refundError);
+        alert('เกิดข้อผิดพลาด กรุณาติดต่อแอดมิน');
+      }
     } finally {
       setIsRedeeming(false);
     }
