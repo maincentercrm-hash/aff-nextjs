@@ -10,6 +10,7 @@ import FormLabel from '@mui/material/FormLabel'
 import TextField from '@mui/material/TextField'
 import Chip from '@mui/material/Chip'
 import Box from '@mui/material/Box'
+import { useTheme } from '@mui/material/styles'
 
 type SessionSelectorProps = {
   sessions: string[]
@@ -28,7 +29,7 @@ const SessionSelector = ({
   error,
   helperText
 }: SessionSelectorProps) => {
-
+  const theme = useTheme()
   const [mode, setMode] = useState<'existing' | 'new'>('existing')
   const [newSessionName, setNewSessionName] = useState('')
 
@@ -70,7 +71,14 @@ const SessionSelector = ({
         ชื่อภารกิจ (Session)
       </FormLabel>
 
-      <Box className="border rounded-md p-3 bg-gray-50 dark:bg-gray-800">
+      <Box
+        sx={{
+          border: `1px solid ${theme.palette.divider}`,
+          borderRadius: 1,
+          p: 1.5,
+          bgcolor: theme.palette.action.hover
+        }}
+      >
         <RadioGroup
           value={mode === 'new' ? '__new__' : value}
           onChange={handleModeChange}
