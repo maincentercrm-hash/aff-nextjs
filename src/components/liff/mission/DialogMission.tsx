@@ -59,7 +59,8 @@ const DialogMission = ({ data, userId, tel }: PrompsDialogMission) => {
       userId: userId,
       tel: tel,
       mission_id: data._id,
-      status: 'active'
+      status: 'active',
+      end_date: data.end_date // เก็บ end_date จาก mission เพื่อใช้ check expire
     }
 
     console.log(missionData)
