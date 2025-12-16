@@ -27,9 +27,11 @@ export const fileValidationSchema = z.object({
   if (ALLOWED_IMAGE_TYPES.includes(file.type)) {
     return file.size <= MAX_IMAGE_SIZE
   }
+
   if (ALLOWED_VIDEO_TYPES.includes(file.type)) {
     return file.size <= MAX_VIDEO_SIZE
   }
+
   return false
 }, {
   message: 'ไฟล์มีขนาดใหญ่เกินไป (รูปภาพ: 5MB, วิดีโอ: 50MB)'

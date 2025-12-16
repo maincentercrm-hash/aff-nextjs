@@ -52,6 +52,7 @@ const DialogCreate = ({ initDefault, structure }: propsCreate) => {
   const handleCreate = async () => {
     // Validate ก่อน submit
     const { isValid } = validate(data)
+
     if (!isValid) return
 
     await actionCreate('tbl_setting', data)

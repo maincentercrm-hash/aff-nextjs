@@ -10,9 +10,8 @@ import DialogTitle from '@mui/material/DialogTitle'
 import DialogContent from '@mui/material/DialogContent'
 import DialogActions from '@mui/material/DialogActions'
 import Alert from '@mui/material/Alert'
-
-// Component Imports
 import MenuItem from '@mui/material/MenuItem'
+
 import type { SelectChangeEvent } from '@mui/material/Select'
 
 import { useQueryClient } from '@tanstack/react-query'
@@ -105,6 +104,7 @@ const DialogCreate = ({ initDefault, structure }: propsCreate) => {
   const handleCreate = async () => {
     // Validate ก่อน submit
     const { isValid } = validate(data)
+
     if (!isValid) return
 
     await actionCreate('tbl_community', data)

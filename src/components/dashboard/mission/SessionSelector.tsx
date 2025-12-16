@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect } from 'react'
+
 import Radio from '@mui/material/Radio'
 import RadioGroup from '@mui/material/RadioGroup'
 import FormControlLabel from '@mui/material/FormControlLabel'
@@ -41,6 +42,7 @@ const SessionSelector = ({
         setNewSessionName(value)
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const handleModeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -57,6 +59,7 @@ const SessionSelector = ({
 
   const handleNewSessionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = event.target.value
+
     setNewSessionName(newValue)
     onChange(newValue)
   }

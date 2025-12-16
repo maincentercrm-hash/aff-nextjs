@@ -3,8 +3,6 @@
 // React Imports
 import { useState } from 'react'
 
-// Next Imports
-
 // MUI Imports
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { styled, useTheme } from '@mui/material/styles'
@@ -14,19 +12,14 @@ import InputAdornment from '@mui/material/InputAdornment'
 import Checkbox from '@mui/material/Checkbox'
 import Button from '@mui/material/Button'
 import FormControlLabel from '@mui/material/FormControlLabel'
-
+import Alert from '@mui/material/Alert'
 
 // Third-party Imports
 import classnames from 'classnames'
 
-// Type Imports
-import Alert from '@mui/material/Alert'
-
-
+import type { SystemMode } from '@core/types'
 
 import UsersLogin from '@/action/users/userLogin'
-
-import type { SystemMode } from '@core/types'
 
 // Component Imports
 import Link from '@components/Link'
@@ -43,8 +36,6 @@ import { useDialogRegister, useLogin, useStoreMsg } from '@/store/useStore'
 import DialogRigister from './DialogRigister'
 import { useFormValidation } from '@/validations/useFormValidation'
 import { loginSchema } from '@/validations/schemas'
-
-// MUI Imports
 
 
 // Styled Custom Components
@@ -80,7 +71,7 @@ const LoginV2 = ({ mode }: { mode: SystemMode }) => {
   const [isPasswordShown, setIsPasswordShown] = useState(false)
 
   // Validation
-  const { validate, getError, hasErrors } = useFormValidation(loginSchema)
+  const { validate, getError } = useFormValidation(loginSchema)
 
   // Vars
   const darkImg = '/images/pages/auth-mask-dark.png'
@@ -117,6 +108,7 @@ const LoginV2 = ({ mode }: { mode: SystemMode }) => {
 
     // Validate ก่อน submit
     const { isValid } = validate({ email, password })
+
     if (!isValid) return
 
     try {

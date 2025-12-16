@@ -11,7 +11,6 @@ import DialogContent from '@mui/material/DialogContent'
 import DialogActions from '@mui/material/DialogActions'
 import Alert from '@mui/material/Alert'
 
-// Component Imports
 import { useQueryClient } from '@tanstack/react-query'
 
 import FileUpload from './fileUpload'
@@ -66,8 +65,10 @@ const DialogCreate = ({ structure }: propsCreate) => {
   const handleCreate = async () => {
     // Validate ก่อน submit
     const { isValid } = validate(data || {})
+
     if (!isValid) {
       setErrorMsg('กรุณาเลือกไฟล์ที่ต้องการอัปโหลด')
+
       return
     }
 

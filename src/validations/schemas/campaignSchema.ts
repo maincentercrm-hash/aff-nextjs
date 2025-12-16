@@ -2,7 +2,7 @@ import { z } from 'zod'
 
 export const campaignSchema = z.object({
   title: z
-    .string({ required_error: 'กรุณากรอกชื่อแคมเปญ' })
+    .string()
     .min(1, 'กรุณากรอกชื่อแคมเปญ')
     .max(100, 'ชื่อต้องไม่เกิน 100 ตัวอักษร'),
   description: z
@@ -10,7 +10,7 @@ export const campaignSchema = z.object({
     .max(500, 'รายละเอียดต้องไม่เกิน 500 ตัวอักษร')
     .optional(),
   target: z
-    .string({ required_error: 'กรุณาเลือกกลุ่มเป้าหมาย' })
+    .string()
     .min(1, 'กรุณาเลือกกลุ่มเป้าหมาย'),
   thumbnail: z.any().optional(),
   volumn: z.number().optional(),

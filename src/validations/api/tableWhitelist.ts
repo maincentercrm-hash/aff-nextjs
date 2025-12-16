@@ -34,5 +34,6 @@ export function getSafeTableName(table: string): AllowedTable {
   if (!isValidTable(table)) {
     throw new Error(`Invalid table name: ${table}`)
   }
+
   return table
 }

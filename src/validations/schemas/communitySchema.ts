@@ -2,7 +2,7 @@ import { z } from 'zod'
 
 export const communitySchema = z.object({
   title: z
-    .string({ required_error: 'กรุณากรอกชื่อ' })
+    .string()
     .min(1, 'กรุณากรอกชื่อ')
     .max(100, 'ชื่อต้องไม่เกิน 100 ตัวอักษร'),
   excerpt: z
@@ -10,10 +10,10 @@ export const communitySchema = z.object({
     .max(300, 'คำอธิบายย่อต้องไม่เกิน 300 ตัวอักษร')
     .optional(),
   category: z
-    .string({ required_error: 'กรุณาเลือกหมวดหมู่' })
+    .string()
     .min(1, 'กรุณาเลือกหมวดหมู่'),
   status: z
-    .string({ required_error: 'กรุณาเลือกสถานะ' })
+    .string()
     .min(1, 'กรุณาเลือกสถานะ'),
   thumbnail: z.any().optional()
 })

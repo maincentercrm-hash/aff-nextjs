@@ -2,11 +2,11 @@ import { z } from 'zod'
 
 export const missionSchema = z.object({
   title: z
-    .string({ required_error: 'กรุณากรอกชื่อภารกิจ' })
+    .string()
     .min(1, 'กรุณากรอกชื่อภารกิจ')
     .max(100, 'ชื่อภารกิจต้องไม่เกิน 100 ตัวอักษร'),
   detail: z
-    .string({ required_error: 'กรุณากรอกรายละเอียด' })
+    .string()
     .min(1, 'กรุณากรอกรายละเอียด'),
   point: z
     .union([z.string(), z.number()])
@@ -22,10 +22,10 @@ export const missionSchema = z.object({
     .transform((val) => new Date(val))
     .refine((val) => !isNaN(val.getTime()), 'กรุณาเลือกวันสิ้นสุด'),
   type: z
-    .string({ required_error: 'กรุณาเลือกประเภท' })
+    .string()
     .min(1, 'กรุณาเลือกประเภท'),
   status: z
-    .string({ required_error: 'กรุณาเลือกสถานะ' })
+    .string()
     .min(1, 'กรุณาเลือกสถานะ'),
   condition: z.string().optional(),
   session: z
@@ -36,6 +36,7 @@ export const missionSchema = z.object({
 }).refine((data) => {
   const start = new Date(data.startDate)
   const end = new Date(data.endDate)
+
   return end >= start
 }, {
   message: 'วันสิ้นสุดต้องมากกว่าหรือเท่ากับวันเริ่มต้น',

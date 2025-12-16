@@ -2,7 +2,7 @@ import { z } from 'zod'
 
 export const pointSchema = z.object({
   title: z
-    .string({ required_error: 'กรุณากรอกชื่อรางวัล' })
+    .string()
     .min(1, 'กรุณากรอกชื่อรางวัล'),
   point: z
     .union([z.string(), z.number()])
@@ -10,11 +10,11 @@ export const pointSchema = z.object({
     .refine((val) => !isNaN(val), 'กรุณากรอกตัวเลข')
     .refine((val) => val > 0, 'คะแนนต้องมากกว่า 0'),
   type: z
-    .string({ required_error: 'กรุณาเลือกประเภท' })
+    .string()
     .min(1, 'กรุณาเลือกประเภท'),
   reward: z.string().optional(),
   status: z
-    .string({ required_error: 'กรุณาเลือกสถานะ' })
+    .string()
     .min(1, 'กรุณาเลือกสถานะ'),
   thumbnail: z.any().optional()
 }).refine((data) => {
@@ -22,6 +22,7 @@ export const pointSchema = z.object({
   if (data.type === 'credit') {
     return data.reward && data.reward.length > 0
   }
+
   return true
 }, {
   message: 'กรุณากรอก reward เมื่อเลือกประเภท credit',

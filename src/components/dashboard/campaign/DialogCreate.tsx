@@ -9,14 +9,12 @@ import Dialog from '@mui/material/Dialog'
 import DialogTitle from '@mui/material/DialogTitle'
 import DialogContent from '@mui/material/DialogContent'
 import DialogActions from '@mui/material/DialogActions'
-
-// Component Imports
 import MenuItem from '@mui/material/MenuItem'
+import Alert from '@mui/material/Alert'
+
 import type { SelectChangeEvent } from '@mui/material/Select'
 
 import { useQueryClient } from '@tanstack/react-query'
-
-import Alert from '@mui/material/Alert'
 
 import CustomTextField from '@core/components/mui/TextField'
 import FileUpload from './fileUpload'
@@ -109,6 +107,7 @@ const DialogCreate = ({ structure }: propsCreate) => {
   const handleCreate = async () => {
     // Validate ก่อน submit
     const { isValid } = validate(data)
+
     if (!isValid) return
 
     const res = await actionCreate('tbl_campaign', data)

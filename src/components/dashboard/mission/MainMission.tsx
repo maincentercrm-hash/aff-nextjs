@@ -116,6 +116,7 @@ const MainMission = () => {
           counts[item.session] = 0
           uniqueSessions.push(item.session)
         }
+
         counts[item.session]++
       }
     })

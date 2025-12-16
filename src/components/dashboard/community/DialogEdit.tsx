@@ -6,24 +6,14 @@ import Dialog from '@mui/material/Dialog'
 import DialogTitle from '@mui/material/DialogTitle'
 import DialogContent from '@mui/material/DialogContent'
 import DialogActions from '@mui/material/DialogActions'
-
-//import DialogContentText from '@mui/material/DialogContentText'
-
-
-
-
 import MenuItem from '@mui/material/MenuItem'
 
-import type { SelectChangeEvent } from '@mui/material/Select';
+import type { SelectChangeEvent } from '@mui/material/Select'
 
 import { useQueryClient } from '@tanstack/react-query'
 
 import { ItemsContext } from './MainCommunity'
-
 import CustomTextField from '@/@core/components/mui/TextField'
-
-
-
 
 import type { TypeCommunity } from '@/types/typeCommunity'
 
@@ -42,6 +32,7 @@ const DialogEdit = () => {
   // Safe values สำหรับ fields ที่อาจเป็น undefined
   const safeSelect = useMemo(() => {
     if (!select) return null
+
     return {
       ...select,
       title: select.title || '',

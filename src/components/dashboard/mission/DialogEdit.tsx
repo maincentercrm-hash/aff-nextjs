@@ -6,31 +6,28 @@ import Dialog from '@mui/material/Dialog'
 import DialogTitle from '@mui/material/DialogTitle'
 import DialogContent from '@mui/material/DialogContent'
 import DialogActions from '@mui/material/DialogActions'
-
 import Typography from '@mui/material/Typography'
-
 import MenuItem from '@mui/material/MenuItem'
 
-import type { SelectChangeEvent } from '@mui/material/Select';
+import type { SelectChangeEvent } from '@mui/material/Select'
 
 import { useQueryClient } from '@tanstack/react-query'
 
 import { ItemsContext } from './MainMission'
-
 import CustomTextField from '@/@core/components/mui/TextField'
-
 import FileUpload from './fileUpload'
+import DateTimePicker from './DateTimePicker'
+import SessionSelector from './SessionSelector'
 
 import type { TypeMission } from '@/types/typeMission'
 
 import actionUpdate from '@/action/crud/update'
-import DateTimePicker from './DateTimePicker'
-import SessionSelector from './SessionSelector'
 
 // Helper function สำหรับ parse date อย่างปลอดภัย
 const safeParseDate = (dateValue: any): Date => {
   if (!dateValue) return new Date()
   const parsed = new Date(dateValue)
+
   return isNaN(parsed.getTime()) ? new Date() : parsed
 }
 
@@ -47,6 +44,7 @@ const DialogEdit = () => {
   // Safe values สำหรับ fields ที่อาจเป็น undefined
   const safeSelect = useMemo(() => {
     if (!select) return null
+
     return {
       ...select,
       title: select.title || '',

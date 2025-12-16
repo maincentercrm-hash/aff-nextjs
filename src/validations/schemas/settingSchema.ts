@@ -2,12 +2,12 @@ import { z } from 'zod'
 
 export const settingSchema = z.object({
   key: z
-    .string({ required_error: 'กรุณากรอก key' })
+    .string()
     .min(1, 'กรุณากรอก key')
     .max(50, 'key ต้องไม่เกิน 50 ตัวอักษร')
     .regex(/^[a-zA-Z_][a-zA-Z0-9_]*$/, 'key ต้องเป็นตัวอักษรภาษาอังกฤษและ underscore เท่านั้น'),
   value: z
-    .string({ required_error: 'กรุณากรอก value' })
+    .string()
     .min(1, 'กรุณากรอก value'),
   point: z
     .union([z.string(), z.number()])

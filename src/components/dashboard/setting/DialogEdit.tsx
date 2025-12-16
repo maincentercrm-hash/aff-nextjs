@@ -7,17 +7,10 @@ import DialogTitle from '@mui/material/DialogTitle'
 import DialogContent from '@mui/material/DialogContent'
 import DialogActions from '@mui/material/DialogActions'
 
-//import DialogContentText from '@mui/material/DialogContentText'
-
-
-
 import { useQueryClient } from '@tanstack/react-query'
 
 import { ItemsContext } from './MainSetting'
-
 import CustomTextField from '@/@core/components/mui/TextField'
-
-
 
 import type { TypeSetting } from '@/types/typeSetting'
 
@@ -34,6 +27,7 @@ const DialogEdit = () => {
   // Safe values สำหรับ fields ที่อาจเป็น undefined
   const safeSelect = useMemo(() => {
     if (!select) return null
+
     return {
       ...select,
       title: select.title || '',

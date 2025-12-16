@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react'
-import { z } from 'zod'
+
+import type { z } from 'zod'
 
 interface ValidationResult {
   isValid: boolean
@@ -29,12 +30,15 @@ export function useFormValidation<T extends z.ZodType<any, any>>(schema: T) {
 
     if (result.success) {
       setErrors({})
+
       return { isValid: true, errors: {} }
     }
 
     const newErrors: Record<string, string> = {}
-    result.error.errors.forEach((err) => {
+
+    result.error.issues.forEach((err) => {
       const path = err.path.join('.')
+
       // เก็บเฉพาะ error แรกของแต่ละ field
       if (!newErrors[path]) {
         newErrors[path] = err.message
@@ -42,6 +46,7 @@ export function useFormValidation<T extends z.ZodType<any, any>>(schema: T) {
     })
 
     setErrors(newErrors)
+
     return { isValid: false, errors: newErrors }
   }, [schema])
 
@@ -57,19 +62,24 @@ export function useFormValidation<T extends z.ZodType<any, any>>(schema: T) {
       // ลบ error ของ field นี้ออก
       setErrors(prev => {
         const newErrors = { ...prev }
+
         delete newErrors[fieldName]
+
         return newErrors
       })
+
       return null
     }
 
     // หา error ของ field นี้
-    const fieldError = result.error.errors.find(err => err.path.join('.') === fieldName)
+    const fieldError = result.error.issues.find(err => err.path.join('.') === fieldName)
+
     if (fieldError) {
       setErrors(prev => ({
         ...prev,
         [fieldName]: fieldError.message
       }))
+
       return fieldError.message
     }
 
@@ -89,7 +99,9 @@ export function useFormValidation<T extends z.ZodType<any, any>>(schema: T) {
   const clearFieldError = useCallback((fieldName: string) => {
     setErrors(prev => {
       const newErrors = { ...prev }
+
       delete newErrors[fieldName]
+
       return newErrors
     })
   }, [])
@@ -134,8 +146,10 @@ export function validateData<T extends z.ZodType<any, any>>(
   }
 
   const errors: Record<string, string> = {}
-  result.error.errors.forEach((err) => {
+
+  result.error.issues.forEach((err) => {
     const path = err.path.join('.')
+
     if (!errors[path]) {
       errors[path] = err.message
     }
