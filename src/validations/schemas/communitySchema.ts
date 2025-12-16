@@ -9,6 +9,9 @@ export const communitySchema = z.object({
     .string()
     .max(300, 'คำอธิบายย่อต้องไม่เกิน 300 ตัวอักษร')
     .optional(),
+  url: z
+    .string()
+    .optional(),
   category: z
     .string()
     .min(1, 'กรุณาเลือกหมวดหมู่'),

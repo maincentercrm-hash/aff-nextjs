@@ -10,7 +10,7 @@ const MAX_IMAGE_SIZE = 5 * 1024 * 1024 // 5MB
 const MAX_VIDEO_SIZE = 50 * 1024 * 1024 // 50MB
 
 export const mediasSchema = z.object({
-  file: z
+  media: z
     .any()
     .refine((file) => file && file.length > 0, 'กรุณาเลือกไฟล์'),
   thumbnail: z.any().optional()

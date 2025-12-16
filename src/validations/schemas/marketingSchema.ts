@@ -5,10 +5,14 @@ export const marketingSchema = z.object({
     .string()
     .min(1, 'กรุณากรอกชื่อ')
     .max(100, 'ชื่อต้องไม่เกิน 100 ตัวอักษร'),
-  description: z
+  excerpt: z
     .string()
-    .max(500, 'รายละเอียดต้องไม่เกิน 500 ตัวอักษร')
+    .max(300, 'คำอธิบายย่อต้องไม่เกิน 300 ตัวอักษร')
     .optional(),
+  detail: z
+    .string()
+    .optional(),
+  file_download: z.any().optional(),
   status: z
     .string()
     .min(1, 'กรุณาเลือกสถานะ'),

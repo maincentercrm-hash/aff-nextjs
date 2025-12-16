@@ -5,7 +5,7 @@ export const campaignSchema = z.object({
     .string()
     .min(1, 'กรุณากรอกชื่อแคมเปญ')
     .max(100, 'ชื่อต้องไม่เกิน 100 ตัวอักษร'),
-  description: z
+  detail: z
     .string()
     .max(500, 'รายละเอียดต้องไม่เกิน 500 ตัวอักษร')
     .optional(),

@@ -5,11 +5,11 @@ export const supportSchema = z.object({
     .string()
     .min(1, 'กรุณากรอกชื่อ')
     .max(100, 'ชื่อต้องไม่เกิน 100 ตัวอักษร'),
-  description: z
+  excerpt: z
     .string()
-    .max(300, 'รายละเอียดย่อต้องไม่เกิน 300 ตัวอักษร')
+    .max(300, 'คำอธิบายย่อต้องไม่เกิน 300 ตัวอักษร')
     .optional(),
-  detail: z.string().optional(), // Rich text content
+  detail: z.string().optional(),
   status: z
     .string()
     .min(1, 'กรุณาเลือกสถานะ'),
