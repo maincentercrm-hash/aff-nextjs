@@ -50,7 +50,17 @@ const DialogCreate = ({ initDefault, structure }: propsCreate) => {
 
   const [clearThumbnail, setClearThumbnail] = useState<boolean>(false);
 
-  const handleClickOpen = () => setOpen(true)
+  const handleClickOpen = () => {
+    // ตั้งค่า start_date และ end_date เริ่มต้นเป็นวันปัจจุบัน
+    const now = new Date()
+
+    setData((oldData: any) => ({
+      ...oldData,
+      start_date: now,
+      end_date: now
+    }))
+    setOpen(true)
+  }
 
   const handleClose = () => {
     setOpen(false)
@@ -184,7 +194,12 @@ const DialogCreate = ({ initDefault, structure }: propsCreate) => {
                 return (
 
                   <div key={index} className='block mb-2'>
-                    <DateTimePicker id={item.id} label={item.label} value={new Date} handleChangeDateTime={handleChangeDateTime} />
+                    <DateTimePicker
+                      id={item.id}
+                      label={item.label}
+                      value={data[item.id] ? new Date(data[item.id]) : new Date()}
+                      handleChangeDateTime={handleChangeDateTime}
+                    />
                   </div>
 
                 );

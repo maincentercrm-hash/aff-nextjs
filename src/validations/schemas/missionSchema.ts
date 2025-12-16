@@ -13,14 +13,18 @@ export const missionSchema = z.object({
     .transform((val) => Number(val))
     .refine((val) => !isNaN(val), 'กรุณากรอกตัวเลข')
     .refine((val) => val > 0, 'คะแนนต้องมากกว่า 0'),
-  startDate: z
-    .union([z.string(), z.date()])
-    .transform((val) => new Date(val))
-    .refine((val) => !isNaN(val.getTime()), 'กรุณาเลือกวันเริ่มต้น'),
-  endDate: z
-    .union([z.string(), z.date()])
-    .transform((val) => new Date(val))
-    .refine((val) => !isNaN(val.getTime()), 'กรุณาเลือกวันสิ้นสุด'),
+  start_date: z.any().refine((val) => {
+    if (!val) return false
+    const date = new Date(val)
+
+    return !isNaN(date.getTime())
+  }, 'กรุณาเลือกวันเริ่มต้น'),
+  end_date: z.any().refine((val) => {
+    if (!val) return false
+    const date = new Date(val)
+
+    return !isNaN(date.getTime())
+  }, 'กรุณาเลือกวันสิ้นสุด'),
   type: z
     .string()
     .min(1, 'กรุณาเลือกประเภท'),
@@ -31,13 +35,13 @@ export const missionSchema = z.object({
   session: z.string().optional(),
   thumbnail: z.any().optional()
 }).refine((data) => {
-  const start = new Date(data.startDate)
-  const end = new Date(data.endDate)
+  const start = new Date(data.start_date)
+  const end = new Date(data.end_date)
 
   return end >= start
 }, {
   message: 'วันสิ้นสุดต้องมากกว่าหรือเท่ากับวันเริ่มต้น',
-  path: ['endDate']
+  path: ['end_date']
 })
 
 export type MissionFormData = z.infer<typeof missionSchema>
