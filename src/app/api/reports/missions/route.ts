@@ -200,6 +200,20 @@ export async function GET(req: NextRequest) {
               ]
             }
           },
+          expiredMissions: {
+            $sum: {
+              $cond: [
+                {
+                  $and: [
+                    { $eq: ["$source", "mission"] },
+                    { $eq: ["$status", "expire"] }
+                  ]
+                },
+                1,
+                0
+              ]
+            }
+          },
           totalPoints: { $sum: { $ifNull: ["$point", 0] } }
         }
       },
@@ -215,6 +229,7 @@ export async function GET(req: NextRequest) {
         totalMissions: day.totalMissions,
         completedMissions: day.completedMissions,
         pendingMissions: day.pendingMissions,
+        expiredMissions: day.expiredMissions,
         totalPoints: day.totalPoints
       }
     }));
@@ -224,9 +239,10 @@ export async function GET(req: NextRequest) {
         totalMissions: acc.totalMissions + day.summary.totalMissions,
         completedMissions: acc.completedMissions + day.summary.completedMissions,
         pendingMissions: acc.pendingMissions + day.summary.pendingMissions,
+        expiredMissions: acc.expiredMissions + day.summary.expiredMissions,
         totalPoints: acc.totalPoints + day.summary.totalPoints
       }),
-      { totalMissions: 0, completedMissions: 0, pendingMissions: 0, totalPoints: 0 }
+      { totalMissions: 0, completedMissions: 0, pendingMissions: 0, expiredMissions: 0, totalPoints: 0 }
     );
 
     if (dailyReports.length > 0) {

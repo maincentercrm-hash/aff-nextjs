@@ -20,6 +20,7 @@ export type DailyReport = {
     totalPoints: number;
     completedMissions: number;
     pendingMissions: number;
+    expiredMissions: number;
   };
   missions: MissionDetail[];
 }
@@ -30,6 +31,7 @@ export type MissionReportData = {
     totalPoints: number;
     completedMissions: number;
     pendingMissions: number;
+    expiredMissions: number;
   };
   dailyReports: DailyReport[];
   status?: boolean;

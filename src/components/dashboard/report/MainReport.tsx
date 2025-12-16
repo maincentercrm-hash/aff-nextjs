@@ -72,6 +72,7 @@ const MissionReport = () => {
       complete: { color: 'success', label: 'สำเร็จ' },
       pending: { color: 'warning', label: 'รอดำเนินการ' },
       active: { color: 'warning', label: 'รอดำเนินการ' },
+      expire: { color: 'error', label: 'หมดเวลา' },
       rejected: { color: 'error', label: 'ไม่สำเร็จ' }
     };
 
@@ -134,6 +135,13 @@ const MissionReport = () => {
                       <Card variant="outlined" sx={{ p: 2 }}>
                         <Typography variant="subtitle2" color="textSecondary">Mission รอดำเนินการ</Typography>
                         <Typography variant="h4" color="warning.main">{data.summary.pendingMissions}</Typography>
+                        <Typography variant="caption" color="textSecondary">รายการ</Typography>
+                      </Card>
+                    </Grid>
+                    <Grid item xs={12} sm={6} md={3}>
+                      <Card variant="outlined" sx={{ p: 2 }}>
+                        <Typography variant="subtitle2" color="textSecondary">Mission หมดเวลา</Typography>
+                        <Typography variant="h4" color="error.main">{data.summary.expiredMissions}</Typography>
                         <Typography variant="caption" color="textSecondary">รายการ</Typography>
                       </Card>
                     </Grid>
