@@ -62,7 +62,13 @@ async function handleExpireCheck() {
         $addFields: {
           mission_id_obj: {
             $cond: {
-              if: { $and: [{ $ne: ["$mission_id", null] }, { $ne: ["$mission_id", ""] }] },
+              if: {
+                $and: [
+                  { $ne: ["$mission_id", null] },
+                  { $ne: ["$mission_id", ""] },
+                  { $eq: [{ $strLenCP: "$mission_id" }, 24] } // ตรวจสอบความยาว ObjectId
+                ]
+              },
               then: { $toObjectId: "$mission_id" },
               else: null
             }
@@ -85,9 +91,11 @@ async function handleExpireCheck() {
       },
       {
         $addFields: {
-          // ใช้ end_date จาก log ก่อน ถ้าไม่มีให้ใช้จาก mission
           effective_end_date: {
             $ifNull: ["$end_date", "$mission.end_date"]
+          },
+          mission_is_expired: {
+            $eq: ["$mission.status", "expire"]
           }
         }
       },
@@ -95,7 +103,8 @@ async function handleExpireCheck() {
         $match: {
           $or: [
             { effective_end_date: { $type: 'string', $lt: nowISO } },
-            { effective_end_date: { $type: 'date', $lt: now } }
+            { effective_end_date: { $type: 'date', $lt: now } },
+            { mission_is_expired: true }
           ]
         }
       }
