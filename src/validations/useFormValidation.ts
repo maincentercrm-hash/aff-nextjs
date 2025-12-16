@@ -26,9 +26,13 @@ export function useFormValidation<T extends z.ZodType<any, any>>(schema: T) {
    * Validate data และอัปเดต errors state
    */
   const validate = useCallback((data: unknown): ValidationResult => {
+    // Debug: แสดงข้อมูลที่ส่งมา validate
+    console.log('📝 Form Data:', data)
+
     const result = schema.safeParse(data)
 
     if (result.success) {
+      console.log('✅ Validation passed')
       setErrors({})
 
       return { isValid: true, errors: {} }
@@ -44,6 +48,10 @@ export function useFormValidation<T extends z.ZodType<any, any>>(schema: T) {
         newErrors[path] = err.message
       }
     })
+
+    // Debug: แสดง errors ที่เกิดขึ้น
+    console.log('❌ Validation errors:', newErrors)
+    console.log('📋 Raw issues:', result.error.issues)
 
     setErrors(newErrors)
 

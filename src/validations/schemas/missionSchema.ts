@@ -28,10 +28,7 @@ export const missionSchema = z.object({
     .string()
     .min(1, 'กรุณาเลือกสถานะ'),
   condition: z.string().optional(),
-  session: z
-    .union([z.string(), z.number()])
-    .transform((val) => Number(val))
-    .optional(),
+  session: z.string().optional(),
   thumbnail: z.any().optional()
 }).refine((data) => {
   const start = new Date(data.startDate)
