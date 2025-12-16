@@ -3,10 +3,16 @@ import { NextResponse } from "next/server";
 import { ObjectId } from "mongodb";
 
 import { connectDB } from "@/configs/mongodb";
+import { isValidTable } from "@/validations/api/tableWhitelist";
 
 export async function PATCH(req: Request) {
   try {
     const { table, data } = await req.json();
+
+    // Security: ตรวจสอบ table name อยู่ใน whitelist
+    if (!isValidTable(table)) {
+      return NextResponse.json({ message: "Invalid table name", type: "error" }, { status: 400 });
+    }
 
     const client = await connectDB();
     const database = client.db(process.env.DB_NAME);

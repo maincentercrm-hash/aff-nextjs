@@ -41,6 +41,8 @@ import { useImageVariant } from '@core/hooks/useImageVariant'
 import { useSettings } from '@core/hooks/useSettings'
 import { useDialogRegister, useLogin, useStoreMsg } from '@/store/useStore'
 import DialogRigister from './DialogRigister'
+import { useFormValidation } from '@/validations/useFormValidation'
+import { loginSchema } from '@/validations/schemas'
 
 // MUI Imports
 
@@ -77,7 +79,8 @@ const LoginV2 = ({ mode }: { mode: SystemMode }) => {
 
   const [isPasswordShown, setIsPasswordShown] = useState(false)
 
-  console.log(`${process.env.NEXT_PUBLIC_APP_URL}/api/users/login`)
+  // Validation
+  const { validate, getError, hasErrors } = useFormValidation(loginSchema)
 
   // Vars
   const darkImg = '/images/pages/auth-mask-dark.png'
@@ -112,8 +115,9 @@ const LoginV2 = ({ mode }: { mode: SystemMode }) => {
   const handleLogin = async (e: { preventDefault: () => void }) => {
     e.preventDefault()
 
-
-
+    // Validate ก่อน submit
+    const { isValid } = validate({ email, password })
+    if (!isValid) return
 
     try {
       // Now you can use email and password for login logic
@@ -121,21 +125,16 @@ const LoginV2 = ({ mode }: { mode: SystemMode }) => {
       const responseData = await UsersLogin(user);
 
       if (!responseData.email) {
-
         setMsg(responseData.message, responseData.type);
       } else {
         setMsg(responseData.message, responseData.type);
-
         setToken(responseData.token)
-
       }
 
     } catch (error) {
       // Handle login error
-      //setAlertLogin({ type: 'error', message: 'มีบางอย่างผิดพลาด' });
+      setMsg('มีบางอย่างผิดพลาด', 'error');
     }
-
-
   }
 
   return (
@@ -178,6 +177,8 @@ const LoginV2 = ({ mode }: { mode: SystemMode }) => {
               name='email'
               onChange={(e) => (setEmail(e.target.value))}
               value={email}
+              error={!!getError('email')}
+              helperText={getError('email')}
             />
             <CustomTextField
               fullWidth
@@ -188,6 +189,8 @@ const LoginV2 = ({ mode }: { mode: SystemMode }) => {
               type={isPasswordShown ? 'text' : 'password'}
               onChange={(e) => (setPassword(e.target.value))}
               value={password}
+              error={!!getError('password')}
+              helperText={getError('password')}
               InputProps={{
                 endAdornment: (
                   <InputAdornment position='end'>

@@ -1,5 +1,5 @@
 // React Imports
-import React, { useContext, useState } from 'react'
+import React, { useContext, useState, useMemo } from 'react'
 
 import Button from '@mui/material/Button'
 import Dialog from '@mui/material/Dialog'
@@ -40,6 +40,20 @@ const DialogEdit = () => {
   const [value, setValue] = useState<string | number>('');
 
   const [clearThumbnail, setClearThumbnail] = useState<boolean>(false);
+
+  // Safe values สำหรับ fields ที่อาจเป็น undefined
+  const safeSelect = useMemo(() => {
+    if (!select) return null
+    return {
+      ...select,
+      title: select.title || '',
+      point: select.point || 0,
+      type: select.type || 'default',
+      reward: select.reward || 0,
+      thumbnail: select.thumbnail || '',
+      status: select.status || 'pending'
+    }
+  }, [select])
 
   const handleClose = () => setOpenEdit(false)
 
@@ -94,7 +108,7 @@ const DialogEdit = () => {
 
   return (
     <>
-      {select &&
+      {safeSelect &&
 
         <Dialog
           open={openEdit}
@@ -103,7 +117,7 @@ const DialogEdit = () => {
           fullWidth={true}
           aria-labelledby='alert-dialog-code'
         >
-          <DialogTitle id='alert-dialog-code' className='pb-2'>แก้ไข : {select.title}</DialogTitle>
+          <DialogTitle id='alert-dialog-code' className='pb-2'>แก้ไข : {safeSelect.title}</DialogTitle>
           <DialogContent>
 
             <CustomTextField fullWidth
@@ -111,7 +125,7 @@ const DialogEdit = () => {
               className='mb-4'
               label='หัวข้อ'
               placeholder='หัวข้อ'
-              defaultValue={select.title}
+              defaultValue={safeSelect.title}
               onChange={handleChangeData}
             />
 
@@ -121,7 +135,7 @@ const DialogEdit = () => {
               label='พ้อย'
               type='number'
               placeholder='พ้อย'
-              defaultValue={select.point}
+              defaultValue={safeSelect.point}
               onChange={handleChangeData}
             />
 
@@ -129,8 +143,8 @@ const DialogEdit = () => {
               select
               fullWidth
               className='mb-4'
-              defaultValue=''
-              value={select.type || 'default'}
+              defaultValue='default'
+              value={safeSelect.type || 'default'}
               label='ประเภทรางวัล'
               id='type'
               name='type'
@@ -141,14 +155,14 @@ const DialogEdit = () => {
             </CustomTextField>
 
             {/* แสดง field reward เฉพาะเมื่อ type เป็น credit */}
-            {select.type === 'credit' && (
+            {safeSelect.type === 'credit' && (
               <CustomTextField fullWidth
                 id='reward'
                 className='mb-4'
                 label='จำนวนเครดิตที่ได้รับ'
                 type='number'
                 placeholder='จำนวนเครดิต'
-                defaultValue={select.reward || 0}
+                defaultValue={safeSelect.reward}
                 onChange={handleChangeData}
               />
             )}
@@ -161,6 +175,7 @@ const DialogEdit = () => {
                 onFileUpload={handleFileUpload}
                 resetFiles={clearThumbnail}
                 label='ภาพปก'
+                defaultImage={safeSelect.thumbnail}
               />
             </div>
 
@@ -168,8 +183,8 @@ const DialogEdit = () => {
             <CustomTextField
               select
               fullWidth
-              defaultValue=''
-              value={select.status}
+              defaultValue='pending'
+              value={safeSelect.status || 'pending'}
               label='สถานะ'
               id='status'
               name='status'

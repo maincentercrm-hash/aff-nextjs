@@ -9,6 +9,7 @@ import Dialog from '@mui/material/Dialog'
 import DialogTitle from '@mui/material/DialogTitle'
 import DialogContent from '@mui/material/DialogContent'
 import DialogActions from '@mui/material/DialogActions'
+import Alert from '@mui/material/Alert'
 
 // Component Imports
 import MenuItem from '@mui/material/MenuItem'
@@ -19,6 +20,8 @@ import { useQueryClient } from '@tanstack/react-query'
 import CustomTextField from '@core/components/mui/TextField'
 import FileUpload from './fileUpload'
 import actionCreate from '@/action/crud/create'
+import { useFormValidation } from '@/validations/useFormValidation'
+import { communitySchema } from '@/validations/schemas'
 
 type propsCreate = {
   initDefault: any;
@@ -28,6 +31,9 @@ type propsCreate = {
 const DialogCreate = ({ initDefault, structure }: propsCreate) => {
 
   const queryClient = useQueryClient()
+
+  // Validation
+  const { validate, getError, clearErrors, hasErrors } = useFormValidation(communitySchema)
 
   // States
   const [open, setOpen] = useState<boolean>(false)
@@ -43,6 +49,7 @@ const DialogCreate = ({ initDefault, structure }: propsCreate) => {
     setOpen(false)
     setClearThumbnail(false)
     setData(initDefault)
+    clearErrors()
   }
 
   const handleFileUpload = (id: string, file: File) => {
@@ -96,11 +103,15 @@ const DialogCreate = ({ initDefault, structure }: propsCreate) => {
   }
 
   const handleCreate = async () => {
+    // Validate ก่อน submit
+    const { isValid } = validate(data)
+    if (!isValid) return
 
     await actionCreate('tbl_community', data)
 
     queryClient.invalidateQueries({ queryKey: ['tbl_community'] })
     setOpen(false)
+    clearErrors()
   }
 
 
@@ -136,6 +147,8 @@ const DialogCreate = ({ initDefault, structure }: propsCreate) => {
                     type={item.type}
                     label={item.label}
                     onChange={handleChangeData}
+                    error={!!getError(item.id)}
+                    helperText={getError(item.id)}
                   />
                 );
 
@@ -149,6 +162,8 @@ const DialogCreate = ({ initDefault, structure }: propsCreate) => {
                     fullWidth
                     label={item.label}
                     onChange={handleChangeData}
+                    error={!!getError(item.id)}
+                    helperText={getError(item.id)}
                   />
                 );
 
@@ -210,6 +225,11 @@ const DialogCreate = ({ initDefault, structure }: propsCreate) => {
             }
           })}
 
+          {hasErrors && (
+            <Alert severity="error" className="mt-4">
+              กรุณากรอกข้อมูลให้ครบถ้วนและถูกต้อง
+            </Alert>
+          )}
 
         </DialogContent>
         <DialogActions className='dialog-actions-dense'>

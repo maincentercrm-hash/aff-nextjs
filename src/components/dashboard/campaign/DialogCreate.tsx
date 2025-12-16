@@ -23,15 +23,19 @@ import FileUpload from './fileUpload'
 import actionCreate from '@/action/crud/create'
 import actionCampaign from '@/action/crud/campaign'
 import flexCampaign from '@/action/message/flexCampaign'
+import { useFormValidation } from '@/validations/useFormValidation'
+import { campaignSchema } from '@/validations/schemas'
 
 type propsCreate = {
-
   structure: any;
 }
 
 const DialogCreate = ({ structure }: propsCreate) => {
 
   const queryClient = useQueryClient()
+
+  // Validation
+  const { validate, getError, clearErrors, hasErrors } = useFormValidation(campaignSchema)
 
   // States
   const [open, setOpen] = useState<boolean>(false)
@@ -49,6 +53,7 @@ const DialogCreate = ({ structure }: propsCreate) => {
     setData(null)
     setCount(null)
     setTarget('')
+    clearErrors()
   }
 
   const handleFileUpload = (id: string, file: File) => {
@@ -102,16 +107,17 @@ const DialogCreate = ({ structure }: propsCreate) => {
   }
 
   const handleCreate = async () => {
-
+    // Validate ก่อน submit
+    const { isValid } = validate(data)
+    if (!isValid) return
 
     const res = await actionCreate('tbl_campaign', data)
 
     await flexCampaign(data, res.id, res.items.thumbnail)
 
-
     queryClient.invalidateQueries({ queryKey: ['tbl_campaign'] })
     setOpen(false)
-
+    clearErrors()
   }
 
 
@@ -160,6 +166,8 @@ const DialogCreate = ({ structure }: propsCreate) => {
                     label={item.label}
                     onChange={handleChangeData}
                     className='mb-2'
+                    error={!!getError(item.id)}
+                    helperText={getError(item.id)}
                   />
                 );
 
@@ -174,13 +182,14 @@ const DialogCreate = ({ structure }: propsCreate) => {
                     label={item.label}
                     onChange={handleChangeData}
                     className='mb-2'
+                    error={!!getError(item.id)}
+                    helperText={getError(item.id)}
                   />
                 );
 
               case 'multiline':
                 return (
                   <CustomTextField
-
                     key={index}
                     id={item.id}
                     multiline
@@ -189,6 +198,8 @@ const DialogCreate = ({ structure }: propsCreate) => {
                     label={item.label}
                     onChange={handleChangeData}
                     className='mb-2'
+                    error={!!getError(item.id)}
+                    helperText={getError(item.id)}
                   />
                 );
 
@@ -229,8 +240,13 @@ const DialogCreate = ({ structure }: propsCreate) => {
             <Alert severity='success'>
               <p>กลุ่มเป้าหมาย จำนวน {count} คน</p>
             </Alert>
-
           }
+
+          {hasErrors && (
+            <Alert severity="error" className="mt-4">
+              กรุณากรอกข้อมูลให้ครบถ้วนและถูกต้อง
+            </Alert>
+          )}
 
         </DialogContent>
         <DialogActions className='dialog-actions-dense'>

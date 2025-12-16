@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useState } from "react"
+import { createContext, useState, useMemo } from "react"
 
 import type { InitMission } from "@/types/InitType"
 import DialogCreate from "./DialogCreate"
@@ -86,7 +86,7 @@ const MainMission = () => {
 
       {
         id: 'session',
-        type: 'text',
+        type: 'session',
         label: 'ชื่อภารกิจ'
       },
       {
@@ -102,6 +102,29 @@ const MainMission = () => {
   }
 
   const items = useRead('tbl_mission')
+
+  // ดึง unique sessions และนับจำนวน missions ในแต่ละ session
+  const { sessions, sessionCounts } = useMemo(() => {
+    if (!items.data) return { sessions: [], sessionCounts: {} }
+
+    const counts: Record<string, number> = {}
+    const uniqueSessions: string[] = []
+
+    items.data.forEach((item: any) => {
+      if (item.session) {
+        if (!counts[item.session]) {
+          counts[item.session] = 0
+          uniqueSessions.push(item.session)
+        }
+        counts[item.session]++
+      }
+    })
+
+    // เรียงตามจำนวน missions (มากไปน้อย)
+    uniqueSessions.sort((a, b) => counts[b] - counts[a])
+
+    return { sessions: uniqueSessions, sessionCounts: counts }
+  }, [items.data])
 
   if (items.status === 'pending') return <span>กำลังโหลดข้อมูล...</span>
   if (!items.data) return <span>ไม่พบข้อมูล</span>
@@ -120,7 +143,9 @@ const MainMission = () => {
             select,
             setSelect,
             openDel,
-            setOpenDel
+            setOpenDel,
+            sessions,
+            sessionCounts
           }}>
 
         <DialogCreate initDefault={initDefault} structure={structure} />

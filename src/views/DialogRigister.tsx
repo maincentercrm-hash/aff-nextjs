@@ -16,6 +16,8 @@ import CustomTextField from '@/@core/components/mui/TextField'
 import UsersRegister from '@/action/users/userRegister'
 
 import { useDialogRegister, useStoreMsg } from '@/store/useStore'
+import { useFormValidation } from '@/validations/useFormValidation'
+import { registerSchema } from '@/validations/schemas'
 
 const DialogRigister = () => {
 
@@ -24,19 +26,31 @@ const DialogRigister = () => {
 
   const [isPasswordShown, setIsPasswordShown] = useState(false);
 
-
+  // Validation
+  const { validate, getError, clearErrors, hasErrors } = useFormValidation(registerSchema)
 
   const handleClickShowPassword = () => {
     setIsPasswordShown((prev) => !prev);
   };
 
+  const handleClose = () => {
+    clearErrors()
+    onClose()
+  }
 
   const handleRegister = async () => {
+    // Validate ก่อน submit
+    const { isValid } = validate({ email, password })
+    if (!isValid) return
+
     try {
-      const user = { email, password };  // Ensure this matches your RegisterType definition
+      const user = { email, password };
       const responseData = await UsersRegister(user);
 
       setMsg(responseData.message, responseData.type);
+      if (responseData.type === 'success') {
+        clearErrors()
+      }
     } catch (error) {
       setMsg('มีบางอย่างผิดพลาด', 'error');
     }
@@ -46,19 +60,20 @@ const DialogRigister = () => {
 
 
   return (
-    <Dialog open={open} onClose={onClose} aria-labelledby='form-dialog-title'>
+    <Dialog open={open} onClose={handleClose} aria-labelledby='form-dialog-title'>
       <DialogTitle id='form-dialog-title'>ลงทะเบียนใช้งาน</DialogTitle>
       <DialogContent className='flex flex-col gap-2'>
         <DialogContentText className='mbe-3'>
           กรุณากรอกอีเมลและรหัสผ่านของคุณ เพื่อทำการลงทะเบียนใช้งาน
         </DialogContentText>
 
-
         <CustomTextField autoFocus fullWidth
           label='อีเมล / ชื่อผู้ใช้'
           placeholder='กรุณากรอกอีเมลหรือชื่อผู้ใช้งาน'
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          error={!!getError('email')}
+          helperText={getError('email')}
         />
         <CustomTextField
           fullWidth
@@ -68,6 +83,8 @@ const DialogRigister = () => {
           type={isPasswordShown ? 'text' : 'password'}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          error={!!getError('password')}
+          helperText={getError('password') || 'รหัสผ่านต้องมีอย่างน้อย 8 ตัว ประกอบด้วยตัวพิมพ์ใหญ่ ตัวพิมพ์เล็ก และตัวเลข'}
           InputProps={{
             endAdornment: (
               <InputAdornment position='end'>
@@ -85,11 +102,16 @@ const DialogRigister = () => {
           </Alert>
         )}
 
+        {hasErrors && !msg && (
+          <Alert severity="error">
+            กรุณากรอกข้อมูลให้ครบถ้วนและถูกต้อง
+          </Alert>
+        )}
+
       </DialogContent>
       <DialogActions className='dialog-actions-dense'>
-
         <Button variant='contained' onClick={handleRegister}>ลงทะเบียน</Button>
-        <Button onClick={onClose}>ปิดหน้าต่าง</Button>
+        <Button onClick={handleClose}>ปิดหน้าต่าง</Button>
       </DialogActions>
     </Dialog>
   )

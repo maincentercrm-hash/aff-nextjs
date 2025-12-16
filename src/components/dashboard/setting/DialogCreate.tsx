@@ -8,11 +8,14 @@ import Dialog from '@mui/material/Dialog'
 import DialogTitle from '@mui/material/DialogTitle'
 import DialogContent from '@mui/material/DialogContent'
 import DialogActions from '@mui/material/DialogActions'
+import Alert from '@mui/material/Alert'
 
 import { useQueryClient } from '@tanstack/react-query'
 
 import CustomTextField from '@/@core/components/mui/TextField'
 import actionCreate from '@/action/crud/create'
+import { useFormValidation } from '@/validations/useFormValidation'
+import { settingSchema } from '@/validations/schemas'
 
 type propsCreate = {
   initDefault: any;
@@ -21,6 +24,10 @@ type propsCreate = {
 
 const DialogCreate = ({ initDefault, structure }: propsCreate) => {
   const queryClient = useQueryClient()
+
+  // Validation
+  const { validate, getError, clearErrors, hasErrors } = useFormValidation(settingSchema)
+
   const [open, setOpen] = useState<boolean>(false)
   const [data, setData] = useState(initDefault)
 
@@ -29,6 +36,7 @@ const DialogCreate = ({ initDefault, structure }: propsCreate) => {
   const handleClose = () => {
     setOpen(false)
     setData(initDefault)
+    clearErrors()
   }
 
   const handleChangeData = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -42,9 +50,14 @@ const DialogCreate = ({ initDefault, structure }: propsCreate) => {
   };
 
   const handleCreate = async () => {
+    // Validate ก่อน submit
+    const { isValid } = validate(data)
+    if (!isValid) return
+
     await actionCreate('tbl_setting', data)
     queryClient.invalidateQueries({ queryKey: ['tbl_setting'] })
     setOpen(false)
+    clearErrors()
   }
 
   return (
@@ -65,8 +78,16 @@ const DialogCreate = ({ initDefault, structure }: propsCreate) => {
               label={item.label}
               onChange={handleChangeData}
               className='mb-2'
+              error={!!getError(item.id)}
+              helperText={getError(item.id)}
             />
           ))}
+
+          {hasErrors && (
+            <Alert severity="error" className="mt-4">
+              กรุณากรอกข้อมูลให้ครบถ้วนและถูกต้อง
+            </Alert>
+          )}
         </DialogContent>
         <DialogActions className='dialog-actions-dense'>
           <Button variant='contained' startIcon={<i className='tabler-plus text-[20px]' />} onClick={handleCreate} size='small'>เพิ่มข้อมูล</Button>

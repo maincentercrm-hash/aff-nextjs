@@ -9,14 +9,15 @@ import Dialog from '@mui/material/Dialog'
 import DialogTitle from '@mui/material/DialogTitle'
 import DialogContent from '@mui/material/DialogContent'
 import DialogActions from '@mui/material/DialogActions'
+import Alert from '@mui/material/Alert'
 
 // Component Imports
-
-
 import { useQueryClient } from '@tanstack/react-query'
 
 import FileUpload from './fileUpload'
 import actionCreate from '@/action/crud/create'
+import { useFormValidation } from '@/validations/useFormValidation'
+import { mediasSchema } from '@/validations/schemas'
 
 type propsCreate = {
 
@@ -27,10 +28,13 @@ const DialogCreate = ({ structure }: propsCreate) => {
 
   const queryClient = useQueryClient()
 
+  // Validation
+  const { validate, clearErrors, hasErrors } = useFormValidation(mediasSchema)
+
   // States
   const [open, setOpen] = useState<boolean>(false)
-  const [data, setData] = useState(null)
-
+  const [data, setData] = useState<any>(null)
+  const [errorMsg, setErrorMsg] = useState<string>('')
 
   const [clearThumbnail, setClearThumbnail] = useState<boolean>(false);
 
@@ -40,6 +44,8 @@ const DialogCreate = ({ structure }: propsCreate) => {
     setOpen(false)
     setClearThumbnail(false)
     setData(null)
+    setErrorMsg('')
+    clearErrors()
   }
 
   const handleFileUpload = (id: string, file: File) => {
@@ -58,15 +64,18 @@ const DialogCreate = ({ structure }: propsCreate) => {
 
 
   const handleCreate = async () => {
-
-    if (data === null) {
+    // Validate ก่อน submit
+    const { isValid } = validate(data || {})
+    if (!isValid) {
+      setErrorMsg('กรุณาเลือกไฟล์ที่ต้องการอัปโหลด')
       return
     }
 
     await actionCreate('tbl_medias', data)
     queryClient.invalidateQueries({ queryKey: ['tbl_medias'] })
     setOpen(false)
-
+    clearErrors()
+    setErrorMsg('')
   }
 
 
@@ -113,6 +122,11 @@ const DialogCreate = ({ structure }: propsCreate) => {
             }
           })}
 
+          {(hasErrors || errorMsg) && (
+            <Alert severity="error" className="mt-4">
+              {errorMsg || 'กรุณาเลือกไฟล์ที่ต้องการอัปโหลด'}
+            </Alert>
+          )}
 
         </DialogContent>
         <DialogActions className='dialog-actions-dense'>

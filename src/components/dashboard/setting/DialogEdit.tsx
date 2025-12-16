@@ -1,5 +1,5 @@
 // React Imports
-import React, { useContext } from 'react'
+import React, { useContext, useMemo } from 'react'
 
 import Button from '@mui/material/Button'
 import Dialog from '@mui/material/Dialog'
@@ -31,7 +31,15 @@ const DialogEdit = () => {
 
   const { openEdit, setOpenEdit, select, setSelect } = useContext(ItemsContext);
 
-
+  // Safe values สำหรับ fields ที่อาจเป็น undefined
+  const safeSelect = useMemo(() => {
+    if (!select) return null
+    return {
+      ...select,
+      title: select.title || '',
+      point: select.point || 0
+    }
+  }, [select])
 
   const handleClose = () => setOpenEdit(false)
 
@@ -65,7 +73,7 @@ const DialogEdit = () => {
 
   return (
     <>
-      {select &&
+      {safeSelect &&
 
         <Dialog
           open={openEdit}
@@ -74,7 +82,7 @@ const DialogEdit = () => {
           fullWidth={true}
           aria-labelledby='alert-dialog-code'
         >
-          <DialogTitle id='alert-dialog-code' className='pb-2'>แก้ไข : {select.title}</DialogTitle>
+          <DialogTitle id='alert-dialog-code' className='pb-2'>แก้ไข : {safeSelect.title}</DialogTitle>
           <DialogContent>
 
             <CustomTextField fullWidth
@@ -82,7 +90,7 @@ const DialogEdit = () => {
               className='mb-4'
               label='หัวข้อ'
               placeholder='หัวข้อ'
-              defaultValue={select.title}
+              defaultValue={safeSelect.title}
               onChange={handleChangeData}
             />
 
@@ -90,8 +98,9 @@ const DialogEdit = () => {
               id='point'
               className='mb-4'
               label='คะแนน'
+              type='number'
               placeholder='คะแนน'
-              defaultValue={select.point}
+              defaultValue={safeSelect.point}
               onChange={handleChangeData}
             />
 

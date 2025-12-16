@@ -1,7 +1,7 @@
 'use client'
 
 // React Imports
-import { useState } from 'react'
+import { useState, useContext } from 'react'
 
 // MUI Imports
 import Button from '@mui/material/Button'
@@ -9,6 +9,7 @@ import Dialog from '@mui/material/Dialog'
 import DialogTitle from '@mui/material/DialogTitle'
 import DialogContent from '@mui/material/DialogContent'
 import DialogActions from '@mui/material/DialogActions'
+import Alert from '@mui/material/Alert'
 
 // Component Imports
 import MenuItem from '@mui/material/MenuItem'
@@ -16,13 +17,14 @@ import type { SelectChangeEvent } from '@mui/material/Select'
 
 import { useQueryClient } from '@tanstack/react-query'
 
-
-
 import CustomTextField from '@core/components/mui/TextField'
 import FileUpload from './fileUpload'
 import actionCreate from '@/action/crud/create'
 import DateTimePicker from './DateTimePicker'
-
+import { useFormValidation } from '@/validations/useFormValidation'
+import { missionSchema } from '@/validations/schemas'
+import SessionSelector from './SessionSelector'
+import { ItemsContext } from './MainMission'
 
 type propsCreate = {
   initDefault: any;
@@ -34,13 +36,18 @@ const DialogCreate = ({ initDefault, structure }: propsCreate) => {
 
   const queryClient = useQueryClient()
 
+  // Get sessions from context
+  const { sessions, sessionCounts } = useContext(ItemsContext)
+
+  // Validation
+  const { validate, getError, clearErrors, hasErrors } = useFormValidation(missionSchema)
+
   // States
-
-
   const [open, setOpen] = useState<boolean>(false)
   const [data, setData] = useState(initDefault)
   const [status, setStatus] = useState<string>(initDefault.status)
   const [type, setType] = useState<string>(initDefault.type)
+  const [session, setSession] = useState<string>('')
 
   const [clearThumbnail, setClearThumbnail] = useState<boolean>(false);
 
@@ -50,6 +57,16 @@ const DialogCreate = ({ initDefault, structure }: propsCreate) => {
     setOpen(false)
     setClearThumbnail(false)
     setData(initDefault)
+    setSession('')
+    clearErrors()
+  }
+
+  const handleSessionChange = (value: string) => {
+    setSession(value)
+    setData((oldData: any) => ({
+      ...oldData,
+      session: value
+    }))
   }
 
 
@@ -105,11 +122,15 @@ const DialogCreate = ({ initDefault, structure }: propsCreate) => {
   }
 
   const handleCreate = async () => {
+    // Validate ก่อน submit
+    const { isValid } = validate(data)
+    if (!isValid) return
 
     await actionCreate('tbl_mission', data)
 
     queryClient.invalidateQueries({ queryKey: ['tbl_mission'] })
     setOpen(false)
+    clearErrors()
   }
 
 
@@ -154,6 +175,8 @@ const DialogCreate = ({ initDefault, structure }: propsCreate) => {
                     label={item.label}
                     onChange={handleChangeData}
                     className='mb-2'
+                    error={!!getError(item.id)}
+                    helperText={getError(item.id)}
                   />
                 );
 
@@ -177,6 +200,8 @@ const DialogCreate = ({ initDefault, structure }: propsCreate) => {
                     label={item.label}
                     onChange={handleChangeData}
                     className='mb-2'
+                    error={!!getError(item.id)}
+                    helperText={getError(item.id)}
                   />
                 );
 
@@ -191,6 +216,8 @@ const DialogCreate = ({ initDefault, structure }: propsCreate) => {
                     label={item.label}
                     onChange={handleChangeData}
                     className='mb-2'
+                    error={!!getError(item.id)}
+                    helperText={getError(item.id)}
                   />
                 );
 
@@ -247,12 +274,30 @@ const DialogCreate = ({ initDefault, structure }: propsCreate) => {
 
                 );
 
+              case 'session':
+                return (
+                  <SessionSelector
+                    key={index}
+                    sessions={sessions || []}
+                    sessionCounts={sessionCounts || {}}
+                    value={session}
+                    onChange={handleSessionChange}
+                    error={!!getError('session')}
+                    helperText={getError('session')}
+                  />
+                );
+
               // Add more cases if you have more types
               default:
                 return null; // or some default component if needed
             }
           })}
 
+          {hasErrors && (
+            <Alert severity="error" className="mt-4">
+              กรุณากรอกข้อมูลให้ครบถ้วนและถูกต้อง
+            </Alert>
+          )}
 
         </DialogContent>
         <DialogActions className='dialog-actions-dense'>

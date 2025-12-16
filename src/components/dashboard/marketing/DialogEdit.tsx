@@ -1,5 +1,5 @@
 // React Imports
-import React, { useContext, useState } from 'react'
+import React, { useContext, useState, useMemo } from 'react'
 
 import Button from '@mui/material/Button'
 import Dialog from '@mui/material/Dialog'
@@ -40,6 +40,20 @@ const DialogEdit = () => {
   const [value, setValue] = useState<string | number>('');
 
   const [clearThumbnail, setClearThumbnail] = useState<boolean>(false);
+
+  // Safe values สำหรับ fields ที่อาจเป็น undefined
+  const safeSelect = useMemo(() => {
+    if (!select) return null
+    return {
+      ...select,
+      title: select.title || '',
+      excerpt: select.excerpt || '',
+      detail: select.detail || '',
+      thumbnail: select.thumbnail || '',
+      file_download: select.file_download || '',
+      status: select.status || 'pending'
+    }
+  }, [select])
 
   const handleClose = () => setOpenEdit(false)
 
@@ -94,7 +108,7 @@ const DialogEdit = () => {
 
   return (
     <>
-      {select &&
+      {safeSelect &&
 
         <Dialog
           open={openEdit}
@@ -103,7 +117,7 @@ const DialogEdit = () => {
           fullWidth={true}
           aria-labelledby='alert-dialog-code'
         >
-          <DialogTitle id='alert-dialog-code' className='pb-2'>แก้ไข : {select.title}</DialogTitle>
+          <DialogTitle id='alert-dialog-code' className='pb-2'>แก้ไข : {safeSelect.title}</DialogTitle>
           <DialogContent>
 
             <CustomTextField fullWidth
@@ -111,7 +125,7 @@ const DialogEdit = () => {
               className='mb-4'
               label='หัวข้อ'
               placeholder='หัวข้อ'
-              defaultValue={select.title}
+              defaultValue={safeSelect.title}
               onChange={handleChangeData}
             />
 
@@ -120,7 +134,7 @@ const DialogEdit = () => {
               className='mb-4'
               label='คำโปรย'
               placeholder='คำโปรย'
-              defaultValue={select.excerpt}
+              defaultValue={safeSelect.excerpt}
               onChange={handleChangeData}
             />
 
@@ -130,7 +144,7 @@ const DialogEdit = () => {
               rows={4}
               multiline
               label='รายละเอียด'
-              defaultValue={select.detail}
+              defaultValue={safeSelect.detail}
               className='mb-4'
               onChange={handleChangeData}
             />
@@ -145,7 +159,7 @@ const DialogEdit = () => {
                 label="รูปภาพ"
                 onFileUpload={handleFileUpload}
                 resetFiles={clearThumbnail}
-                defaultImage={select?.thumbnail} // ส่ง thumbnail URL จาก selected item
+                defaultImage={safeSelect.thumbnail}
               />
             </div>
 
@@ -156,6 +170,7 @@ const DialogEdit = () => {
                 onFileUpload={handleFileUpload}
                 resetFiles={clearThumbnail}
                 label='ไฟล์ดาวน์โหลด'
+                defaultImage={safeSelect.file_download}
               />
             </div>
 
@@ -163,8 +178,8 @@ const DialogEdit = () => {
             <CustomTextField
               select
               fullWidth
-              defaultValue=''
-              value={select.status}
+              defaultValue='pending'
+              value={safeSelect.status || 'pending'}
               label='สถานะ'
               id='status'
               name='status'
