@@ -41,6 +41,7 @@ const DialogRigister = () => {
   const handleRegister = async () => {
     // Validate ก่อน submit
     const { isValid } = validate({ email, password })
+
     if (!isValid) return
 
     try {
@@ -48,6 +49,7 @@ const DialogRigister = () => {
       const responseData = await UsersRegister(user);
 
       setMsg(responseData.message, responseData.type);
+
       if (responseData.type === 'success') {
         clearErrors()
       }
