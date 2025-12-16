@@ -151,6 +151,7 @@ const RechartsBarChart = ({ itemsUsers, itemsMission, itemsPoint }: PropsChart) 
   return (
     <Card>
       <CardHeader
+        title="ข้อมูลย้อนหลัง 14 วัน"
         sx={{
           flexDirection: ['column', 'row'],
           alignItems: ['flex-start', 'center'],
