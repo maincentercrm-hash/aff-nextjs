@@ -53,13 +53,21 @@ export async function PUT(req: Request) {
     // สร้าง update query ที่ถูกต้อง
     const updateQuery: Record<string, unknown> = {};
 
-    // วนลูปผ่าน keys ใน updateData และสร้าง dot notation
+    // Sections ที่ต้องการ replace ทั้งหมด (ไม่ใช้ dot notation)
+    const replaceWholeSections = ['slider'];
+
+    // วนลูปผ่าน keys ใน updateData
     Object.entries(updateData as Record<string, Record<string, unknown>>).forEach(
       ([section, sectionData]) => {
-        Object.entries(sectionData).forEach(([key, value]) => {
-          // ใช้ dot notation สำหรับ nested objects
-          updateQuery[`${section}.${key}`] = value;
-        });
+        if (replaceWholeSections.includes(section)) {
+          // สำหรับ slider: replace ทั้ง section เพื่อลบ keys ที่ไม่ใช้ได้
+          updateQuery[section] = sectionData;
+        } else {
+          // สำหรับ section อื่นๆ: ใช้ dot notation สำหรับ nested objects
+          Object.entries(sectionData).forEach(([key, value]) => {
+            updateQuery[`${section}.${key}`] = value;
+          });
+        }
       }
     );
 
@@ -74,8 +82,9 @@ export async function PUT(req: Request) {
 
     await client.close();
 
-    if (result.modifiedCount === 0) {
-      throw new Error('No document was modified');
+    // ถ้า matchedCount > 0 แต่ modifiedCount === 0 หมายถึงข้อมูลเหมือนเดิม (ไม่ใช่ error)
+    if (result.matchedCount === 0) {
+      throw new Error('No document was found');
     }
 
     return NextResponse.json({

@@ -92,8 +92,10 @@ export const useConfig = () => {
       }
 
       // Prepare update data
+      // สำหรับ slider ใช้ data โดยตรง (replace ทั้งหมด) เพราะต้องลบ keys ที่ไม่ใช้
+      // สำหรับ section อื่นๆ ยังคง merge กับ currentConfig
       const updateData = {
-        [path]: {
+        [path]: path === 'slider' ? data : {
           ...currentConfig[path],
           ...data
         }
