@@ -2,8 +2,6 @@
 import { useContext, useState } from "react";
 
 import Pagination from "@mui/material/Pagination";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
 
 import LiffBox from "@/components/liff/LiffBox";
@@ -35,7 +33,6 @@ export default function Page() {
   const pointLogs = useReadKey('tbl_point_logs', 'tel', profile.data?.tel || '');
 
   const [page, setPage] = useState(1);
-  const [tabValue, setTabValue] = useState(0);
 
   if (profile.status === 'pending') return <Loading />;
   if (!profile.data) return <span>ไม่พบข้อมูล</span>;
@@ -47,11 +44,6 @@ export default function Page() {
 
   const handleChangePage = (_event: any, newPage: number) => {
     setPage(newPage);
-  };
-
-  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
-    setTabValue(newValue);
-    setPage(1);
   };
 
   const ITEMS_PER_PAGE = 4;
@@ -83,57 +75,40 @@ export default function Page() {
             <SectionPoint init={data.init} />
           </LiffBox>
 
-          <Box sx={{ borderBottom: 1, borderColor: 'divider', bgcolor: 'white' }}>
-            <Tabs
-              value={tabValue}
-              onChange={handleTabChange}
-              variant="fullWidth"
-              sx={{
-                '& .MuiTab-root': {
-                  fontWeight: 'bold',
-                  fontSize: '14px'
-                }
-              }}
-            >
-              <Tab label="ของรางวัล" />
-              <Tab label="ประวัติ Point" />
-            </Tabs>
-          </Box>
-
-          {tabValue === 0 && (
+          {rewardItems.length === 0 ? (
+            <div className="p-4 text-center text-gray-500">
+              <i className="tabler-gift text-4xl mb-2 block"></i>
+              <p>ไม่พบรายการของรางวัล</p>
+            </div>
+          ) : (
             <>
-              {rewardItems.length === 0 ? (
-                <div className="p-4 text-center text-gray-500">
-                  <i className="tabler-gift text-4xl mb-2 block"></i>
-                  <p>ไม่พบรายการของรางวัล</p>
-                </div>
-              ) : (
-                <>
-                  <LiffBoxRound cols={2}>
-                    <RewardCard
-                      items={data.items}
-                      currentPoint={clientPoint.data.point}
-                      tel={data.init.tel}
-                      userId={profile.data.userId}
-                    />
-                  </LiffBoxRound>
+              <LiffBoxRound cols={2}>
+                <RewardCard
+                  items={data.items}
+                  currentPoint={clientPoint.data.point}
+                  tel={data.init.tel}
+                  userId={profile.data.userId}
+                />
+              </LiffBoxRound>
 
-                  <Pagination
-                    count={Math.ceil(rewardItems.length / ITEMS_PER_PAGE)}
-                    page={page}
-                    shape='rounded'
-                    color='primary'
-                    onChange={handleChangePage}
-                    className='px-4 mt-4 mb-8 flex justify-center'
-                  />
-                </>
+              {rewardItems.length > ITEMS_PER_PAGE && (
+                <Pagination
+                  count={Math.ceil(rewardItems.length / ITEMS_PER_PAGE)}
+                  page={page}
+                  shape='rounded'
+                  color='primary'
+                  onChange={handleChangePage}
+                  className='px-4 mt-4 flex justify-center'
+                />
               )}
             </>
           )}
 
-          {tabValue === 1 && (
-            <PointLogList logs={logs} />
-          )}
+          <Box sx={{ bgcolor: 'white', mt: 2, p: 2, borderBottom: 1, borderColor: 'divider' }}>
+            <h3 className="font-bold text-center">ประวัติ Point</h3>
+          </Box>
+
+          <PointLogList logs={logs} />
         </>
       )}
     </>
