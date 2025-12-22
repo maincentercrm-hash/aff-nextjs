@@ -199,16 +199,6 @@ const DialogMissionActive = ({ data, log, onExpire, missionCache }: PrompsDialog
         return;
       }
 
-      // console.log('data', data)
-      //console.log('data log', log)
-
-      const missionLog = {
-        _id: logId,
-        status: 'complete',
-        point: point,
-        completeDate: new Date().toISOString()
-      };
-
       const clientPoint = {
         userId: log.userId,
         tel: log.tel,
@@ -225,13 +215,36 @@ const DialogMissionActive = ({ data, log, onExpire, missionCache }: PrompsDialog
         createDate: new Date().toISOString()
       };
 
-      await actionUpdate('tbl_mission_logs', missionLog);
-      await actionPoint('tbl_client_point', clientPoint);
-      await actionCreate('tbl_point_logs', pointLog);
+      const missionLog = {
+        _id: logId,
+        status: 'complete',
+        point: point,
+        completeDate: new Date().toISOString()
+      };
 
-      //console.log('tbl_mission_logs', missionLog);
-      // console.log('tbl_client_point', clientPoint);
-      // console.log('tbl_point_logs', pointLog);
+      // Step 1: บวก point ก่อน (ถ้า fail จะไม่อัปเดต mission status)
+      const pointResult = await actionPoint('tbl_client_point', clientPoint);
+
+      if (pointResult?.type === 'error') {
+        throw new Error(pointResult.message || 'ไม่สามารถเพิ่ม Point ได้');
+      }
+
+      // Step 2: สร้าง point log (ถ้า fail จะ rollback point)
+      try {
+        await actionCreate('tbl_point_logs', pointLog);
+      } catch (logError) {
+        // Rollback point ถ้าสร้าง log ไม่สำเร็จ
+        await actionPoint('tbl_client_point', { ...clientPoint, operation: '-' });
+        throw logError;
+      }
+
+      // Step 3: อัปเดต mission status เป็น complete (ทำหลังสุด)
+      try {
+        await actionUpdate('tbl_mission_logs', missionLog);
+      } catch (updateError) {
+        // ถ้าอัปเดต mission fail แต่ point สำเร็จแล้ว ให้แสดง error แต่ไม่ rollback point
+        console.error('Failed to update mission status:', updateError);
+      }
 
       setDialogOpen(true);
 
