@@ -4,18 +4,21 @@
  */
 
 export const ALLOWED_TABLES = [
+  'tbl_campaign',
+  'tbl_client',
+  'tbl_client_point',
+  'tbl_community',
+  'tbl_configs',
+  'tbl_line_log',
+  'tbl_medias',
   'tbl_mission',
   'tbl_mission_logs',
-  'tbl_campaign',
-  'tbl_community',
+  'tbl_online_marketings',
   'tbl_point',
   'tbl_point_logs',
-  'tbl_online_marketings',
-  'tbl_medias',
-  'tbl_support',
   'tbl_setting',
-  'tbl_client',
-  'tbl_pointlog',
+  'tbl_setting_log',
+  'tbl_support',
   'tbl_users'
 ] as const
 
