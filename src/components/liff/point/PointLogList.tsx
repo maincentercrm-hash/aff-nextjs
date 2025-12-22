@@ -1,7 +1,3 @@
-import { useState } from 'react'
-
-import Pagination from '@mui/material/Pagination'
-
 import GetDateTimeOnly from '@/views/getDateTimeOnly'
 
 type PointLog = {
@@ -16,19 +12,11 @@ type PointLog = {
 
 type PropsPointLogList = {
   logs: PointLog[]
+  limit?: number
 }
 
-const PointLogList = ({ logs }: PropsPointLogList) => {
-  const [page, setPage] = useState(1)
-  const ITEMS_PER_PAGE = 10
-
-  const handleChangePage = (_event: any, newPage: number) => {
-    setPage(newPage)
-  }
-
-  const startIndex = (page - 1) * ITEMS_PER_PAGE
-  const endIndex = startIndex + ITEMS_PER_PAGE
-  const slicedLogs = logs.slice(startIndex, endIndex)
+const PointLogList = ({ logs, limit = 5 }: PropsPointLogList) => {
+  const displayLogs = logs.slice(0, limit)
 
   if (!logs || logs.length === 0) {
     return (
@@ -42,7 +30,7 @@ const PointLogList = ({ logs }: PropsPointLogList) => {
   return (
     <div className="p-4">
       <div className="space-y-2">
-        {slicedLogs.map((log) => (
+        {displayLogs.map((log) => (
           <div
             key={log._id}
             className="flex items-center justify-between p-3 bg-white rounded-lg shadow-sm border border-gray-100"
@@ -78,17 +66,6 @@ const PointLogList = ({ logs }: PropsPointLogList) => {
           </div>
         ))}
       </div>
-
-      {logs.length > ITEMS_PER_PAGE && (
-        <Pagination
-          count={Math.ceil(logs.length / ITEMS_PER_PAGE)}
-          page={page}
-          shape="rounded"
-          color="primary"
-          onChange={handleChangePage}
-          className="mt-4 flex justify-center"
-        />
-      )}
     </div>
   )
 }
