@@ -5,6 +5,7 @@
 
 export const ALLOWED_TABLES = [
   'tbl_mission',
+  'tbl_mission_logs',
   'tbl_campaign',
   'tbl_community',
   'tbl_point',
