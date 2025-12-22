@@ -9,6 +9,7 @@ export const ALLOWED_TABLES = [
   'tbl_campaign',
   'tbl_community',
   'tbl_point',
+  'tbl_point_logs',
   'tbl_online_marketings',
   'tbl_medias',
   'tbl_support',
