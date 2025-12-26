@@ -1,0 +1,168 @@
+{
+  "info": {
+    "_postman_id": "lt-atgame-api-collection",
+    "name": "LT-ATGAME External APIs",
+    "description": "API Collection สำหรับทดสอบ Deposit และ Share APIs",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "https://api.ruaysud.com",
+      "type": "string"
+    },
+    {
+      "key": "api_key",
+      "value": "00EBAAA48032C118787BD5E7C09C7AF12FA1766F3874C933FC2FBBA928ED65F4",
+      "type": "string"
+    },
+    {
+      "key": "line_id",
+      "value": "YOUR_LINE_USER_ID",
+      "type": "string"
+    },
+    {
+      "key": "line_at",
+      "value": "@lottwin88",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Deposit",
+      "item": [
+        {
+          "name": "Get Deposit Data",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "api-key",
+                "value": "{{api_key}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/players/v1/line/deposit?line_id={{line_id}}&line_at={{line_at}}&start_date={{start_date}}&end_date={{end_date}}",
+              "host": ["{{base_url}}"],
+              "path": ["players", "v1", "line", "deposit"],
+              "query": [
+                {
+                  "key": "line_id",
+                  "value": "{{line_id}}",
+                  "description": "LINE User ID (เช่น U1234567890abcdef)"
+                },
+                {
+                  "key": "line_at",
+                  "value": "{{line_at}}",
+                  "description": "LINE AT identifier (@lottwin88)"
+                },
+                {
+                  "key": "start_date",
+                  "value": "{{start_date}}",
+                  "description": "Unix timestamp วันเริ่มต้น (เช่น 1703404800)"
+                },
+                {
+                  "key": "end_date",
+                  "value": "{{end_date}}",
+                  "description": "Unix timestamp วันสิ้นสุด (เช่น 1703491200)"
+                }
+              ]
+            },
+            "description": "ดึงข้อมูลยอดฝากเงินของผู้ใช้ในช่วงระยะเวลาที่กำหนด\n\n**Response Example:**\n```json\n{\n  \"deposit\": 750\n}\n```"
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{base_url}}/players/v1/line/deposit?line_id=U1234567890&line_at=@lottwin88&start_date=1703404800&end_date=1703491200"
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"deposit\": 750\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Share (Affiliate)",
+      "item": [
+        {
+          "name": "Get Affiliate Data",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "API-KEY",
+                "value": "{{api_key}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/games/players/line/affiliate?line_id={{line_id}}&line_at={{line_at}}",
+              "host": ["{{base_url}}"],
+              "path": ["games", "players", "line", "affiliate"],
+              "query": [
+                {
+                  "key": "line_id",
+                  "value": "{{line_id}}",
+                  "description": "LINE User ID (เช่น U1234567890abcdef)"
+                },
+                {
+                  "key": "line_at",
+                  "value": "{{line_at}}",
+                  "description": "LINE AT identifier (@lottwin88)"
+                }
+              ]
+            },
+            "description": "ดึงข้อมูล Affiliate (การแชร์) ของผู้ใช้\n\n**Response Example:**\n```json\n{\n  \"code\": \"ABC123\",\n  \"playerBets\": [\n    {\n      \"username\": \"user1\",\n      \"created_at\": \"2025-11-01T10:00:00Z\",\n      \"bet_amount\": 100,\n      \"commission_amount\": 10\n    }\n  ],\n  \"playerSummaries\": [\n    {\n      \"date\": \"2025-11-01\",\n      \"amount\": 100\n    }\n  ]\n}\n```"
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{base_url}}/games/players/line/affiliate?line_id=U1234567890&line_at=@lottwin88"
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"code\": \"ABC123\",\n  \"playerBets\": [\n    {\n      \"username\": \"user1\",\n      \"created_at\": \"2025-11-01T10:00:00Z\",\n      \"bet_amount\": 100,\n      \"commission_amount\": 10\n    }\n  ],\n  \"playerSummaries\": [\n    {\n      \"date\": \"2025-11-01\",\n      \"amount\": 100\n    }\n  ]\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Set default timestamps if not provided",
+          "if (!pm.variables.get('start_date')) {",
+          "    // Default: start of today",
+          "    const today = new Date();",
+          "    today.setHours(0, 0, 0, 0);",
+          "    pm.variables.set('start_date', Math.floor(today.getTime() / 1000));",
+          "}",
+          "",
+          "if (!pm.variables.get('end_date')) {",
+          "    // Default: end of today",
+          "    const today = new Date();",
+          "    today.setHours(23, 59, 59, 999);",
+          "    pm.variables.set('end_date', Math.floor(today.getTime() / 1000));",
+          "}"
+        ]
+      }
+    }
+  ]
+}

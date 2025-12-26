@@ -130,14 +130,15 @@ export const useMissionShare = (
           throw new Error('Invalid date format provided');
         }
 
-        // Process unique players within timeframe
+        // Process unique players within timeframe (must have bet_amount > 0 to prevent spam accounts)
         const uniquePlayers = new Set(
           data.playerBets
             .filter(player => {
               const createdAt = new Date(player.created_at);
 
-
-              return createdAt >= missionStart && createdAt <= missionEnd;
+              return createdAt >= missionStart &&
+                     createdAt <= missionEnd &&
+                     player.bet_amount > 0;
             })
             .map(player => player.username)
         );
@@ -145,13 +146,14 @@ export const useMissionShare = (
         const totalPlayers = uniquePlayers.size;
         const daysInRange = Math.ceil((missionEnd.getTime() - missionStart.getTime()) / (1000 * 60 * 60 * 24));
 
-        // Create daily breakdown
+        // Create daily breakdown (only include players with bet_amount > 0)
         const dailyBreakdown = data.playerBets
           .filter(player => {
             const createdAt = new Date(player.created_at);
 
-
-            return createdAt >= missionStart && createdAt <= missionEnd;
+            return createdAt >= missionStart &&
+                   createdAt <= missionEnd &&
+                   player.bet_amount > 0;
           })
           .map(player => ({
             date: player.created_at,
